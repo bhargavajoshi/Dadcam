@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e0d0b">
+<title>Dadcam</title>
+<style>
+:root{box-sizing:border-box;--bg:#0e0d0b;--fg:#f2e9d8;--mut:#9a8f7c;--ac:#ff8a1e;--cd:#1c1a16;--ln:#3a352c;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:ui-monospace,Menlo,Consolas,monospace;overflow:hidden;touch-action:manipulation}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;transition:opacity .5s}
+#splash.out{opacity:0;pointer-events:none}
+.lg{font-size:44px;font-weight:800;letter-spacing:.12em}.lg b{color:var(--ac)}
+.sub{margin-top:12px;font-size:12px;color:var(--mut);letter-spacing:.2em}.sub i{color:#ff2a2a;font-style:normal;animation:bl 1s steps(2) infinite}
+@keyframes bl{50%{opacity:0}}
+#app{height:100%;display:flex;flex-direction:column;align-items:center}
+header{width:100%;display:flex;justify-content:space-between;align-items:center;padding:8px 14px}
+h1{font-size:15px;letter-spacing:.2em;margin:0}h1 b{color:var(--ac)}
+.ib{border:1px solid var(--ln);border-radius:18px;padding:5px 11px;font-size:11px}
+#vf{position:relative;width:min(calc(100vw - 20px),calc((100dvh - 290px)*.75));aspect-ratio:3/4;background:#000;border-radius:6px;overflow:hidden;flex:none}
+#pv{width:100%;height:100%;object-fit:contain;display:block;transition:opacity .1s}
+#msg{position:absolute;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--mut);font-size:12px;line-height:1.5}
+#zm{position:absolute;left:0;right:0;bottom:8px;display:flex;justify-content:center;gap:6px}
+#zm button{min-width:42px;height:30px;border-radius:15px;background:rgba(0,0,0,.55);font-size:11px;padding:0 9px}
+#zm button.on{color:var(--ac);border:1px solid var(--ac)}
+#zr{position:absolute;top:8px;left:10px;font-size:11px;background:rgba(0,0,0,.5);padding:3px 8px;border-radius:10px}
+#tm{position:absolute;top:8px;right:10px;font-size:12px;color:#ff2a2a;background:rgba(0,0,0,.5);padding:3px 8px;border-radius:10px;display:none}
+#note{width:100%;padding:6px 16px 0;font-size:10.5px;line-height:1.4;color:var(--mut);height:44px;overflow:hidden}
+#note b{color:var(--ac)}
+#strip,#estrip{display:flex;gap:7px;overflow-x:auto;padding:7px 12px;scrollbar-width:none;width:100%}
+#strip::-webkit-scrollbar,#estrip::-webkit-scrollbar{display:none}
+.ch{flex:0 0 auto;border:1px solid var(--ln);border-radius:10px;padding:6px 10px;font-size:11px;white-space:nowrap;background:var(--cd)}
+.ch.on{border-color:var(--ac);color:var(--ac)}
+#mode{display:flex;gap:18px;font-size:11px;letter-spacing:.15em;color:var(--mut);padding:2px 0}
+#mode .on{color:var(--ac)}
+#bar{width:100%;display:flex;justify-content:space-around;align-items:center;padding:4px 10px 12px}
+#sh{width:68px;height:68px;border-radius:50%;border:4px solid var(--fg);background:var(--fg);box-shadow:inset 0 0 0 4px var(--bg)}
+#sh.v{background:#e22;box-shadow:inset 0 0 0 4px var(--bg)}#sh.rec{border-radius:18px;transform:scale(.85)}
+.sb{width:52px;height:52px;border-radius:12px;border:1px solid var(--ln);overflow:hidden;font-size:11px;color:var(--mut);background:var(--cd)}
+.sb img{width:100%;height:100%;object-fit:cover;display:block}
+.ov{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:10;padding-top:env(safe-area-inset-top,0px)}
+.ov.open{display:flex}
+.oh{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;gap:8px}
+#gg{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:0 12px 20px;align-content:start}
+#gg div{background:var(--cd);border-radius:8px;padding:6px}
+#gg img,#gg video{width:100%;display:block;border-radius:4px}
+#gg .r{display:flex}#gg .r button{flex:1;padding:8px;font-size:12px;color:var(--ac)}
+#ec{flex:1;min-height:0;display:flex;justify-content:center;padding:0 12px}
+#ev{max-width:100%;max-height:100%;object-fit:contain}
+#sl{padding:6px 16px;display:grid;grid-template-columns:1fr 1fr;gap:2px 16px;font-size:10.5px;color:var(--mut)}
+#sl input{width:100%;accent-color:var(--ac)}
+#pl button{display:block;width:100%;text-align:left;padding:14px 18px;border-bottom:1px solid var(--ln);font-size:13px}
+#pl button.on{color:var(--ac)}
+</style></head><body>
+<div id="splash"><div class="lg">DAD<b>CAM</b></div><div class="sub"><i>●</i> REC · HOME VIDEO</div></div>
+<div id="app">
+<header><h1>DAD<b>CAM</b></h1><button class="ib" id="pb">Phone</button></header>
+<div id="vf"><canvas id="pv"></canvas><div id="msg"></div><div id="zr"></div><div id="tm"></div><div id="zm"></div></div>
+<div id="note"></div>
+<div id="strip"></div>
+<div id="mode"><button id="mp" class="on">PHOTO</button><button id="mv">VIDEO</button></div>
+<div id="bar"><button class="sb" id="fl">Flip</button><button id="sh" aria-label="Shutter"></button><button class="sb" id="gb">Roll</button></div>
+</div>
+<div class="ov" id="gal"><div class="oh"><b>YOUR ROLL</b><span><button class="ib" id="im">＋ Import</button> <button class="ib" id="gc">Close</button></span></div><div id="gg"></div></div>
+<div class="ov" id="ed"><div class="oh"><b>EDIT</b><span><button class="ib" id="es">Save</button> <button class="ib" id="ed2">Done</button></span></div><div id="ec"><canvas id="ev"></canvas></div><div id="estrip"></div><div id="sl"></div></div>
+<div class="ov" id="pl"><div class="oh"><b>YOUR PHONE</b><button class="ib" id="pc">Close</button></div><div id="pll"></div></div>
+<input type="file" id="fi" accept="image/*" hidden><video id="v" playsinline muted autoplay hidden></video>
+<script>
+const $=id=>document.getElementById(id),cl=x=>x<0?0:x>1?1:x;
+const D={br:0,con:1,sat:1,sh:[0,0,0],hi:[0,0,0],fade:0,grain:0,vig:0,res:1600};
+const mk=(n,cam,t,o)=>({n,cam,t,...D,...o});
+// Filters researched from film-stock, digicam and camcorder characteristics
+const F=[
+mk("Original","Your phone camera","No filter. Clean capture.",{res:1920}),
+mk("Dadcam MiniDV","Sony Handycam DCR-HC / TRV (MiniDV, 2000s)","Home-video look: faded, soft contrast, slight warm-green cast, sensor noise, REC and timestamp.",{con:.95,sat:.9,sh:[0,.02,0],hi:[.03,.03,-.01],fade:.06,grain:.12,chroma:1,vig:.3,res:640,scan:1,rec:1}),
+mk("Hi8 Tape","Sony Handycam Hi8 / Video8 (90s)","Soft analog bleed, hot saturated colour, heavy noise and scanlines.",{sat:1.25,con:1.1,sh:[.02,0,.03],hi:[.04,.02,0],fade:.05,grain:.2,chroma:1,vig:.35,res:480,scan:1,rec:1}),
+mk("Digicam 2003","Sony Cyber-shot / Canon IXUS / Casio Exilim","Small CCD + harsh flash: blown highlights, cool cast, colour noise, orange date stamp.",{br:.06,con:1.25,sat:1.15,sh:[-.02,.02,.06],hi:[.02,.01,-.02],fade:.02,grain:.1,chroma:1,vig:.25,res:960,date:1}),
+mk("Y2K Flip Phone","Early camera phones (VGA/1MP)","Crunchy low-res, over-sharp contrast, cold saturated colour.",{br:.04,con:1.3,sat:1.3,sh:[-.03,.01,.05],hi:[0,.02,.02],grain:.14,chroma:1,vig:.2,res:480,date:1}),
+mk("Disposable Flash","Kodak FunSaver / Fuji Quicksnap","Plastic lens + direct flash: punchy warm colour, hot centre, dark corners, light leak.",{br:.04,con:1.2,sat:1.25,sh:[.03,0,-.02],hi:[.05,.03,-.03],fade:.04,grain:.16,vig:.55,res:1280,leak:1,date:1}),
+mk("Polaroid 600","Polaroid OneStep / 600 film","Creamy border, lifted blacks, soft contrast, teal shadows with warm highlights.",{br:.03,con:.9,sat:.9,sh:[-.01,.03,.04],hi:[.05,.02,-.03],fade:.11,grain:.06,vig:.3,res:900,frame:1}),
+mk("Instax Mini","Fujifilm Instax Mini","Cooler, pinkish pastel instant print with a soft white frame.",{br:.04,con:.95,sat:.95,sh:[.02,0,.03],hi:[.04,.02,.03],fade:.07,grain:.07,vig:.25,res:900,frame:1}),
+mk("Kodak Gold 200","Kodak Gold on Pentax K1000 / Canon AE-1","90s family album: golden warm tones, rich yellows and reds, gentle grain.",{br:.03,con:1.1,sat:1.15,sh:[.04,.02,-.02],hi:[.06,.03,-.04],fade:.04,grain:.1,vig:.2,date:1}),
+mk("Portra 400","Kodak Portra 400","Soft pastel, flattering warm skin tones, fine grain, gentle contrast.",{con:.95,sat:.95,sh:[.01,.01,.02],hi:[.04,.02,0],fade:.05,grain:.08,vig:.15}),
+mk("Ektar 100","Kodak Ektar 100","Ultra-vivid saturation and punchy contrast with very fine grain.",{con:1.2,sat:1.45,sh:[0,0,.01],hi:[.02,0,-.01],grain:.04,vig:.15}),
+mk("Kodachrome 64","Kodachrome 64 slide film","Deep reds, rich warm contrast, the classic 60s–80s magazine look.",{con:1.25,sat:1.2,sh:[.03,0,-.02],hi:[.04,.01,-.03],grain:.08,vig:.3}),
+mk("Superia 400","Fujifilm Superia 400","Cooler greener shadows, crisp reds, minty cast.",{br:.02,con:1.15,sat:1.1,sh:[-.03,.04,.03],hi:[0,.03,-.01],fade:.03,grain:.13,vig:.25}),
+mk("Velvia 50","Fujifilm Velvia 50 slide film","Extreme saturation, strong greens and magentas, high contrast.",{con:1.25,sat:1.55,sh:[-.02,.01,.03],hi:[.01,.02,0],grain:.05,vig:.2}),
+mk("Agfa Vista 200","Agfa Vista / Agfacolor 200","Warm red-orange cast with pinkish skin and slightly muted greens.",{con:1.08,sat:1.1,sh:[.04,-.01,-.02],hi:[.06,.01,-.02],fade:.05,grain:.12,vig:.25}),
+mk("CineStill 800T","Tungsten film (Kodak Vision3 500T)","Teal shadows, warm glowing highlights with red halation around lights.",{con:1.15,sat:1.05,sh:[-.04,0,.07],hi:[.05,0,-.03],fade:.03,hal:.6,grain:.14,vig:.3}),
+mk("Cross Process","Lomo LC-A / cross-processed slide film","Cyan-blue shadows, yellow-green highlights, crushed contrast and heavy vignette.",{con:1.35,sat:1.5,sh:[-.04,0,.1],hi:[.04,.08,-.08],fade:.02,grain:.12,vig:.8}),
+mk("Expired Film","Out-of-date 35mm stock","Faded magenta shift, lifted blacks, big grain and light leaks.",{con:.95,sat:.9,sh:[.04,-.02,.04],hi:[.05,.02,-.04],fade:.14,grain:.22,vig:.5,leak:1}),
+mk("70s Faded","1970s snapshots / Instamatic","Warm yellowed whites, washed colour, soft vignette.",{con:.95,sat:.85,sh:[.03,.01,0],hi:[.07,.04,-.03],fade:.12,grain:.12,vig:.4}),
+mk("Super 8","Kodak Super 8 cine film","Warm home-movie look with heavy grain, soft edges and light leaks.",{con:1.05,sat:1.05,sh:[.03,0,-.01],hi:[.06,.03,-.03],fade:.08,grain:.26,vig:.6,res:800,leak:1}),
+mk("Tri-X B&W","Kodak Tri-X 400 on Leica M / Nikon F","Photojournalism monochrome: deep blacks, strong contrast, visible grain.",{bw:1,con:1.4,fade:.03,grain:.22,vig:.4}),
+mk("Ilford HP5","Ilford HP5 Plus 400","Softer, tonally smooth black and white with creamy greys.",{bw:1,con:1.15,fade:.05,grain:.2,vig:.3}),
+mk("1900s Sepia","Box Brownie / early plate cameras","Brown toned silver print, soft contrast, heavy vignette.",{sep:1,br:.02,con:1.05,fade:.12,grain:.15,vig:.75,res:1000})
+];
+const P=[{n:"vivo V50",main:23,f:[23,35,50]},{n:"iPhone Pro",main:24,f:[13,24,28,35,48,77,120]},{n:"iPhone",main:24,f:[13,24,28,35,48]},{n:"Samsung Galaxy S",main:23,f:[13,23,46,70,111]},{n:"Other phone",main:1,f:[.5,1,2,5]}];
+const A0=()=>({ex:0,co:0,sa:0,wa:0,fa:0,gr:0,vi:0,st:1});
+const work=document.createElement('canvas'),v=$('v'),pv=$('pv'),pc=pv.getContext('2d',{willReadFrequently:true});
+let cur=0,facing='environment',stream=null,roll=[],ei=-1,prof=0,zr=1,hw=1,dz=1,caps=null,recording=false,vmode=false,mr=null,chunks=[],t0=0;
+
+function adjF(f,a){const w=a.wa*.05;return{...f,br:f.br+a.ex*.25,con:f.con*(1+a.co*.5),sat:f.sat*(1+a.sa*.8),sh:[f.sh[0]+w,f.sh[1],f.sh[2]-w],hi:[f.hi[0]+w,f.hi[1],f.hi[2]-w],fade:Math.max(0,f.fade+a.fa*.15),grain:Math.max(0,f.grain+a.gr*.15),vig:Math.max(0,f.vig+a.vi*.5)}}
+
+function render(src,cvs,f0,w,a,z){
+ a=a||A0();z=z||1;const f=adjF(f0,a);
+ const sw=src.videoWidth||src.naturalWidth||src.width,sh=src.videoHeight||src.naturalHeight||src.height;
+ if(!sw||!sh)return false;
+ const R=.75;let cW,cH;if(sw/sh>R){cH=sh;cW=sh*R}else{cW=sw;cH=sw/R}
+ cW/=z;cH/=z;const sx=(sw-cW)/2,sy=(sh-cH)/2,cw=Math.min(w,Math.round(cW)),ch=Math.round(cw/R);
+ const t=f.frame?work:cvs;t.width=cw;t.height=ch;
+ const x=t.getContext('2d',{willReadFrequently:true});
+ x.drawImage(src,sx,sy,cW,cH,0,0,cw,ch);
+ const id=x.getImageData(0,0,cw,ch),d=id.data,g=f.grain,fd=f.fade;
+ for(let i=0,p=0;i<d.length;i+=4,p++){
+  let r=d[i]/255+f.br,gg=d[i+1]/255+f.br,b=d[i+2]/255+f.br;
+  r=(r-.5)*f.con+.5;gg=(gg-.5)*f.con+.5;b=(b-.5)*f.con+.5;
+  let l=.299*r+.587*gg+.114*b;
+  r=l+(r-l)*f.sat;gg=l+(gg-l)*f.sat;b=l+(b-l)*f.sat;
+  const k=1-cl(l);
+  r+=f.sh[0]*k+f.hi[0]*l;gg+=f.sh[1]*k+f.hi[1]*l;b+=f.sh[2]*k+f.hi[2]*l;
+  if(f.hal&&l>.7)r+=(l-.7)*f.hal;
+  if(f.bw){l=.299*r+.587*gg+.114*b;r=gg=b=l}
+  if(f.sep){l=.299*r+.587*gg+.114*b;r=l*1.08+.06;gg=l*.95+.02;b=l*.72}
+  r=fd+r*(1-fd);gg=fd+gg*(1-fd);b=fd+b*(1-fd);
+  if(g){const n=(Math.random()-.5)*g;if(f.chroma){const q=g*.6;r+=n+(Math.random()-.5)*q;gg+=n+(Math.random()-.5)*q;b+=n+(Math.random()-.5)*q}else{r+=n;gg+=n;b+=n}}
+  const X=p%cw,Y=(p/cw)|0,dx=X/cw-.5,dy=Y/ch-.5;
+  let vg=1-f.vig*(dx*dx+dy*dy)*2.8;if(f.scan&&Y%3===0)vg*=.82;
+  d[i]=cl(r*vg)*255;d[i+1]=cl(gg*vg)*255;d[i+2]=cl(b*vg)*255;
+ }
+ x.putImageData(id,0,0);
+ if(f.leak){x.globalCompositeOperation='screen';const q=x.createLinearGradient(0,0,cw*.35,0);q.addColorStop(0,'rgba(255,110,20,.55)');q.addColorStop(1,'rgba(255,110,20,0)');x.fillStyle=q;x.fillRect(0,0,cw,ch);x.globalCompositeOperation='source-over'}
+ if(a.st&&(f.date||f.rec)){
+  const dt=new Date(),p2=n=>String(n).padStart(2,'0'),s="'"+p2(dt.getFullYear()%100)+" "+p2(dt.getMonth()+1)+" "+p2(dt.getDate());
+  x.font=`bold ${Math.round(cw*.045)}px ui-monospace,Menlo,monospace`;x.textBaseline='bottom';
+  if(f.date){x.fillStyle='#ff8a1e';x.shadowColor='rgba(255,120,0,.8)';x.shadowBlur=cw*.01;x.textAlign='right';x.fillText(s,cw*.95,ch*.96);x.shadowBlur=0}
+  if(f.rec){x.fillStyle='#ff2a2a';x.textAlign='left';x.fillText('● REC',cw*.05,ch*.1);x.fillStyle='#fff';x.textAlign='right';x.fillText(s+' '+p2(dt.getHours())+':'+p2(dt.getMinutes()),cw*.95,ch*.96)}
+ }
+ if(f.frame){const m=Math.round(cw*.07),bt=Math.round(cw*.2);cvs.width=cw+m*2;cvs.height=ch+m+bt;const c=cvs.getContext('2d');c.fillStyle='#f3ecda';c.fillRect(0,0,cvs.width,cvs.height);c.drawImage(work,m,m)}
+ return true;
+}
+
+function loop(){
+ const f=F[cur];
+ if(v.readyState>=2&&!$('ed').classList.contains('open'))render(v,pv,f,Math.min(recording?540:420,f.res),null,dz);
+ setTimeout(()=>requestAnimationFrame(loop),recording?40:45);
+}
+
+// camera + zoom
+async function start(){
+ $('msg').style.display='none';
+ try{
+  if(stream)stream.getTracks().forEach(t=>t.stop());
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:facing,width:{ideal:1440},height:{ideal:1920},aspectRatio:{ideal:.75}},audio:false});
+  v.srcObject=stream;await v.play();
+  const tr=stream.getVideoTracks()[0];caps=tr.getCapabilities?tr.getCapabilities():{};
+  pv.style.transform=facing==='user'?'scaleX(-1)':'none';
+  setZ(1);
+ }catch(e){$('msg').style.display='flex';$('msg').innerHTML='Camera not available here.<br>Allow camera access, or open Roll → ＋ Import to edit any photo with Dadcam filters.'}
+}
+function setZ(r){
+ const pr=P[prof];r=Math.max(.5,Math.min(10,r));zr=r;
+ const z=caps&&caps.zoom;hw=z?Math.max(z.min,Math.min(z.max,r)):1;
+ if(z&&stream)stream.getVideoTracks()[0].applyConstraints({advanced:[{zoom:hw}]}).catch(()=>{});
+ dz=Math.max(1,r/hw);
+ const mm=pr.main===1?r.toFixed(1)+'×':Math.round(r*pr.main)+'mm';
+ $('zr').textContent=mm;
+ document.querySelectorAll('#zm button').forEach(b=>b.classList.toggle('on',Math.abs(+b.dataset.r-r)<.02));
+}
+function buildZ(){
+ const pr=P[prof];$('zm').innerHTML='';
+ pr.f.forEach(f=>{const b=document.createElement('button'),r=f/pr.main;b.dataset.r=r;b.textContent=pr.main===1?f+'×':f+'mm';b.onclick=()=>setZ(r);$('zm').appendChild(b)});
+ $('pb').textContent=pr.n;setZ(1);
+}
+let pd=0,pz=1;
+$('vf').addEventListener('touchstart',e=>{if(e.touches.length===2){pd=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);pz=zr}},{passive:true});
+$('vf').addEventListener('touchmove',e=>{if(e.touches.length===2&&pd){const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);setZ(pz*d/pd)}},{passive:true});
+
+// UI
+function show(){const f=F[cur];$('note').innerHTML=`<b>${f.n}</b> · ${f.cam}<br>${f.t}`;document.querySelectorAll('#strip .ch').forEach((c,i)=>c.classList.toggle('on',i===cur))}
+F.forEach((f,i)=>{const b=document.createElement('button');b.className='ch';b.textContent=f.n;b.onclick=()=>{cur=i;show()};$('strip').appendChild(b)});
+P.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p.n+' · '+p.f.map(f=>p.main===1?f+'×':f+'mm').join(' / ');b.onclick=()=>{prof=i;try{localStorage.setItem('dc_p',i)}catch(e){}buildZ();$('pl').classList.remove('open')};$('pll').appendChild(b)});
+$('pb').onclick=()=>{[...$('pll').children].forEach((b,i)=>b.classList.toggle('on',i===prof));$('pl').classList.add('open')};
+$('pc').onclick=()=>$('pl').classList.remove('open');
+$('mp').onclick=()=>{vmode=false;$('mp').classList.add('on');$('mv').classList.remove('on');$('sh').classList.remove('v')};
+$('mv').onclick=()=>{vmode=true;$('mv').classList.add('on');$('mp').classList.remove('on');$('sh').classList.add('v')};
+$('fl').onclick=()=>{facing=facing==='user'?'environment':'user';start()};
+
+function thumb(it){const c=document.createElement('canvas');render(it.raw,c,F[it.fi],240,it.adj,1);return c.toDataURL('image/jpeg',.7)}
+function addPhoto(raw,fi){const it={type:'p',raw,fi,adj:A0()};it.th=thumb(it);roll.unshift(it);$('gb').innerHTML=`<img src="${it.th}" alt="">`;return it}
+function snap(){
+ const s=document.createElement('canvas');if(!render(v,s,F[0],1440,null,dz))return;
+ addPhoto(s,cur);pv.style.opacity=.2;setTimeout(()=>pv.style.opacity=1,100);
+}
+async function toggleRec(){
+ if(recording){mr.stop();return}
+ const out=pv.captureStream(24);
+ try{const a=await navigator.mediaDevices.getUserMedia({audio:true});a.getAudioTracks().forEach(t=>out.addTrack(t))}catch(e){}
+ const mime=['video/mp4','video/webm;codecs=vp9','video/webm'].find(m=>window.MediaRecorder&&MediaRecorder.isTypeSupported(m));
+ if(!mime){alert('Video recording is not supported in this browser.');return}
+ mr=new MediaRecorder(out,{mimeType:mime,videoBitsPerSecond:3e6});chunks=[];
+ mr.ondataavailable=e=>chunks.push(e.data);
+ mr.onstop=()=>{recording=false;$('sh').classList.remove('rec');$('tm').style.display='none';out.getTracks().forEach(t=>{if(t.kind==='audio')t.stop()});
+  const b=new Blob(chunks,{type:mime.split(';')[0]}),it={type:'v',blob:b,url:URL.createObjectURL(b),ext:mime.includes('mp4')?'mp4':'webm'};roll.unshift(it);$('gb').innerHTML='<span>🎞</span>'};
+ mr.start();recording=true;t0=Date.now();$('sh').classList.add('rec');$('tm').style.display='block';
+ (function tk(){if(!recording)return;const s=Math.floor((Date.now()-t0)/1000);$('tm').textContent='● '+String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');setTimeout(tk,500)})();
+}
+$('sh').onclick=()=>vmode?toggleRec():snap();
+
+async function out(blob,name){
+ const file=new File([blob],name,{type:blob.type});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return}}catch(e){}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();
+}
+function exportPhoto(it){const f=F[it.fi],o=document.createElement('canvas');render(it.raw,o,f,Math.min(f.res,1920),it.adj,1);o.toBlob(b=>out(b,`dadcam-${f.n.replace(/\W+/g,'-').toLowerCase()}-${Date.now()}.jpg`),'image/jpeg',.92)}
+
+function openRoll(){
+ const g=$('gg');g.innerHTML=roll.length?'':'<p style="color:var(--mut);grid-column:1/-1;padding:10px">Nothing yet. Tap the shutter.</p>';
+ roll.forEach((it,i)=>{const d=document.createElement('div');
+  d.innerHTML=(it.type==='p'?`<img src="${it.th}" alt="">`:`<video src="${it.url}" controls playsinline preload="metadata"></video>`)+`<div class="r">${it.type==='p'?'<button class="e">Edit</button>':''}<button class="s">Save / Share</button></div>`;
+  if(it.type==='p'){d.querySelector('img').onclick=()=>openEd(i);d.querySelector('.e').onclick=()=>openEd(i)}
+  d.querySelector('.s').onclick=()=>it.type==='p'?exportPhoto(it):out(it.blob,`dadcam-${Date.now()}.${it.ext}`);
+  g.appendChild(d)});
+ $('gal').classList.add('open');
+}
+$('gb').onclick=openRoll;$('gc').onclick=()=>$('gal').classList.remove('open');
+$('im').onclick=()=>$('fi').click();
+$('fi').onchange=e=>{const file=e.target.files[0];if(!file)return;const im=new Image();im.onload=()=>{const s=document.createElement('canvas'),R=.75;let cW,cH;if(im.width/im.height>R){cH=im.height;cW=cH*R}else{cW=im.width;cH=cW/R}const k=Math.min(1,1920/cH);s.width=Math.round(cW*k);s.height=Math.round(cH*k);s.getContext('2d').drawImage(im,(im.width-cW)/2,(im.height-cH)/2,cW,cH,0,0,s.width,s.height);addPhoto(s,cur);openRoll();openEd(0)};im.src=URL.createObjectURL(file)};
+
+// editor
+const SL=[['ex','Exposure'],['co','Contrast'],['sa','Saturation'],['wa','Warmth'],['fa','Fade'],['gr','Grain'],['vi','Vignette']];
+SL.forEach(([k,l])=>{const d=document.createElement('label');d.innerHTML=`${l}<input type="range" min="-1" max="1" step=".05" value="0" data-k="${k}">`;d.querySelector('input').oninput=e=>{roll[ei].adj[k]=+e.target.value;edr()};$('sl').appendChild(d)});
+const sd=document.createElement('label');sd.innerHTML='Date / REC stamp<input type="checkbox" checked id="stc" style="accent-color:var(--ac)">';sd.querySelector('input').onchange=e=>{roll[ei].adj.st=e.target.checked?1:0;edr()};$('sl').appendChild(sd);
+F.forEach((f,i)=>{const b=document.createElement('button');b.className='ch';b.textContent=f.n;b.onclick=()=>{roll[ei].fi=i;edc();edr()};$('estrip').appendChild(b)});
+function edc(){document.querySelectorAll('#estrip .ch').forEach((c,i)=>c.classList.toggle('on',i===roll[ei].fi))}
+let eq=0;function edr(){if(eq)return;eq=requestAnimationFrame(()=>{eq=0;const it=roll[ei];render(it.raw,$('ev'),F[it.fi],720,it.adj,1)})}
+function openEd(i){ei=i;const it=roll[i];document.querySelectorAll('#sl input[data-k]').forEach(s=>s.value=it.adj[s.dataset.k]);$('stc').checked=!!it.adj.st;edc();$('ed').classList.add('open');edr()}
+$('es').onclick=()=>exportPhoto(roll[ei]);
+$('ed2').onclick=()=>{const it=roll[ei];it.th=thumb(it);$('ed').classList.remove('open');if(ei===0)$('gb').innerHTML=`<img src="${it.th}" alt="">`;openRoll()};
+
+try{const s=localStorage.getItem('dc_p');if(s!==null)prof=+s;else{const u=navigator.userAgent;prof=/iPhone/.test(u)?2:/SM-|Samsung/i.test(u)?3:/vivo|V2\d{3}/i.test(u)?0:4}}catch(e){}
+buildZ();show();start();loop();
+setTimeout(()=>$('splash').classList.add('out'),1800);
+</script></body></html>
